@@ -1,16 +1,13 @@
-// Adaptador OpenAI-compatible. Cubre de una sola vez:
-//   - llama.cpp `./server` (expone /v1/chat/completions y /v1/embeddings con --embedding)
-//   - Ollama (endpoints /v1/*)
-//   - LM Studio, vLLM, text-generation-webui, y cualquier API OpenAI-compatible remota.
-// Para cambiar de origen: edita LLM_BASE_URL / LLM_MODEL / LLM_EMBED_MODEL en .env. Cero código.
+// OpenAI-compatible adapter: works with llama.cpp, Ollama, LM Studio, vLLM and any
+// OpenAI-compatible endpoint. Change model or origin via env, not code.
 
 import type { ChatMessage, ChatOptions, LLMProvider } from "./provider.js";
 
 export interface OpenAICompatConfig {
-  baseUrl: string; // p.ej. http://127.0.0.1:8080 (llama.cpp) o http://127.0.0.1:11434 (ollama)
+  baseUrl: string;
   model: string;
   embedModel: string;
-  apiKey?: string; // opcional; los servidores locales no lo piden
+  apiKey?: string;
   timeoutMs?: number;
 }
 
@@ -52,7 +49,7 @@ export function createOpenAICompatProvider(cfg: OpenAICompatConfig): LLMProvider
 
     async embed(texts: string[]) {
       const data = await post("/v1/embeddings", { model: cfg.embedModel, input: texts });
-      // La API devuelve en orden pero por robustez ordenamos por `index`.
+      // Re-sort by index: the input order is not guaranteed in the response.
       return (data.data as Array<{ index: number; embedding: number[] }>)
         .slice()
         .sort((a, b) => a.index - b.index)

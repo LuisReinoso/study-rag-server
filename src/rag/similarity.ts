@@ -1,5 +1,3 @@
-// Similaridad PURA. Usada por el store en memoria y testeable sin infra.
-
 export function dot(a: number[], b: number[]): number {
   let s = 0;
   for (let i = 0; i < a.length; i++) s += a[i] * b[i];
@@ -20,7 +18,6 @@ export interface Scored<T> {
   score: number;
 }
 
-// Top-k por similaridad coseno contra un query embedding. Devuelve ordenado desc.
 export function topK<T extends { embedding?: number[] }>(
   query: number[],
   items: T[],

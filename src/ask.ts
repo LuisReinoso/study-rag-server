@@ -1,7 +1,3 @@
-// Orquesta una pregunta: embebe -> recupera del store -> arma prompt grounded ->
-// sintetiza con el LLM -> devuelve respuesta + citas. Solo pega piezas; la lógica
-// (retrieval, prompt) es pura y testeada.
-
 import type { AppConfig } from "./config.js";
 import type { LLMProvider } from "./llm/provider.js";
 import type { VectorStore } from "./store/vector-store.js";
@@ -23,9 +19,8 @@ export async function ask(
   const context: Retrieved[] = hits.map((h) => ({ source: h.source, text: h.text, score: h.score }));
 
   const answer = await llm.chat(buildGroundedMessages(question, context));
-  const cites = citations(context);
   return {
     answer,
-    sources: cites.map((c, i) => ({ ...c, score: hits[i]?.score ?? 0 })),
+    sources: citations(context).map((c, i) => ({ ...c, score: hits[i]?.score ?? 0 })),
   };
 }

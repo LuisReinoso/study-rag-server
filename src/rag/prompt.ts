@@ -1,6 +1,3 @@
-// Construcción PURA del prompt "grounded": el modelo responde SOLO con lo que dicen
-// tus notas, y cita [n] la fuente. Esto es lo que hace útil un RAG de estudio.
-
 import type { ChatMessage } from "../llm/provider.js";
 
 export interface Retrieved {
@@ -23,7 +20,6 @@ export function buildGroundedMessages(question: string, context: Retrieved[]): C
   ];
 }
 
-// Mapa [n] -> nota, para devolver las citas junto a la respuesta.
 export function citations(context: Retrieved[]): Array<{ n: number; source: string }> {
   return context.map((c, i) => ({ n: i + 1, source: c.source }));
 }

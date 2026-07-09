@@ -1,5 +1,3 @@
-// Store en memoria: cero infra, ideal para dev y para los tests. Usa la similaridad pura.
-
 import type { VectorStore, SearchHit } from "./vector-store.js";
 import type { Chunk } from "../rag/chunk.js";
 import { topK } from "../rag/similarity.js";

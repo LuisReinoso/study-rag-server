@@ -1,8 +1,3 @@
-// I/O: Express. Solo endpoints delgados que llaman a la lógica ya ensamblada.
-//   POST /api/index  -> reindexa el vault
-//   POST /api/ask    -> { question } -> { answer, sources }
-//   GET  /health     -> estado (qué LLM y store hay detrás)
-
 import express from "express";
 import cors from "cors";
 import { loadConfig } from "./config.js";
@@ -32,7 +27,7 @@ export async function createServer() {
 
   app.post("/api/ask", async (req, res) => {
     const question = String(req.body?.question ?? "").trim();
-    if (!question) return res.status(400).json({ error: "question requerido" });
+    if (!question) return res.status(400).json({ error: "question required" });
     try {
       res.json(await ask(question, cfg, llm, store));
     } catch (e: any) {

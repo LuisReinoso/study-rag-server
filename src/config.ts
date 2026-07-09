@@ -1,5 +1,3 @@
-// Config desde entorno. Todo lo que cambia entre máquinas/modelos vive aquí.
-
 export interface AppConfig {
   port: number;
   llm: {
@@ -12,7 +10,7 @@ export interface AppConfig {
   store: {
     kind: "pgvector" | "memory";
     databaseUrl?: string;
-    dim: number; // dimensión del embedding (depende del modelo, p.ej. 768 nomic-embed-text)
+    dim: number;
   };
   vaultPath: string;
   chunk: { size: number; overlap: number };
@@ -26,7 +24,6 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     port: num(env.PORT, 8787),
     llm: {
       provider: env.LLM_PROVIDER || "openai-compat",
-      // Default: llama.cpp `./server`. Para Ollama: http://127.0.0.1:11434
       baseUrl: env.LLM_BASE_URL || "http://127.0.0.1:8080",
       model: env.LLM_MODEL || "local",
       embedModel: env.LLM_EMBED_MODEL || "nomic-embed-text",

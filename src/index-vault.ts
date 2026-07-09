@@ -1,6 +1,3 @@
-// I/O: lee el vault de Obsidian (.md recursivo), lo trocea, embebe con el LLMProvider
-// y lo guarda en el vector store. Toda la lógica de troceo/embedding es reusable.
-
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, extname, relative } from "node:path";
 import type { AppConfig } from "./config.js";
@@ -38,8 +35,7 @@ export async function indexVault(
   let all: Chunk[] = [];
   for (const f of files) {
     const text = await readFile(f, "utf8");
-    const source = relative(cfg.vaultPath, f);
-    all = all.concat(chunkNote(source, text, cfg.chunk));
+    all = all.concat(chunkNote(relative(cfg.vaultPath, f), text, cfg.chunk));
   }
 
   for (let i = 0; i < all.length; i += EMBED_BATCH) {

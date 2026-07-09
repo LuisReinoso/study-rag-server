@@ -1,9 +1,6 @@
-// Chunking PURO de una nota. Parte por párrafos y empaqueta hasta ~size caracteres,
-// con solape (overlap) para no cortar ideas a la mitad. Sin I/O.
-
 export interface Chunk {
   id: string;
-  source: string; // nombre/ruta de la nota
+  source: string;
   text: string;
   embedding?: number[];
 }
@@ -13,7 +10,8 @@ export interface ChunkOptions {
   overlap: number;
 }
 
-// Divide el texto de una nota en chunks solapados. `source` se propaga a cada chunk.
+// Splits a note into overlapping chunks. The overlap keeps ideas from being cut across
+// a boundary, which improves retrieval recall.
 export function chunkNote(source: string, text: string, opts: ChunkOptions): Chunk[] {
   const clean = text.replace(/\r\n/g, "\n").trim();
   if (!clean) return [];
@@ -22,15 +20,13 @@ export function chunkNote(source: string, text: string, opts: ChunkOptions): Chu
   const chunks: string[] = [];
   let buf = "";
   for (const p of paras) {
-    if (buf && (buf.length + 1 + p.length) > opts.size) {
+    if (buf && buf.length + 1 + p.length > opts.size) {
       chunks.push(buf);
-      // arrancar el siguiente con el solape final del anterior
       const tail = opts.overlap > 0 ? buf.slice(-opts.overlap) : "";
       buf = tail ? `${tail}\n${p}` : p;
     } else {
       buf = buf ? `${buf}\n${p}` : p;
     }
-    // un párrafo gigante se parte duro
     while (buf.length > opts.size) {
       chunks.push(buf.slice(0, opts.size));
       buf = buf.slice(opts.size - opts.overlap);

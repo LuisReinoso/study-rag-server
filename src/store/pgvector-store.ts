@@ -1,6 +1,3 @@
-// Store con pgvector (Postgres). Production-credible y suma el skill de Postgres.
-// Se conecta perezosamente; crea la extensión y la tabla si no existen.
-
 import pg from "pg";
 import type { VectorStore, SearchHit } from "./vector-store.js";
 import type { Chunk } from "../rag/chunk.js";
@@ -42,8 +39,8 @@ export async function createPgVectorStore(cfg: PgVectorConfig): Promise<VectorSt
       }
     },
     async search(embedding: number[], k: number): Promise<SearchHit[]> {
-      // 1 - distancia coseno = similaridad
       const r = await pool.query(
+        // `<=>` is cosine distance; 1 - distance = similarity.
         `SELECT id, source, text, 1 - (embedding <=> $1) AS score
          FROM ${table} ORDER BY embedding <=> $1 LIMIT $2`,
         [toVector(embedding), k]
