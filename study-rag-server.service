@@ -1,0 +1,16 @@
+[Unit]
+Description=study-rag-server (Ask-your-vault RAG)
+After=network.target
+
+# Servicio de USUARIO: instalar en ~/.config/systemd/user/ y correr con `systemctl --user`.
+# %h = tu HOME (systemd lo expande). Ajusta la subruta si clonaste en otro lado.
+[Service]
+Type=simple
+WorkingDirectory=%h/study-rag-server
+EnvironmentFile=%h/study-rag-server/.env
+ExecStart=/usr/bin/node dist/main.js
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
