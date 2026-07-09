@@ -1,5 +1,9 @@
 # study-rag-server
 
+<div align="center">
+  <img src="demo.gif" alt="Asking a question answered from your own notes, with citations" width="480" />
+</div>
+
 > **Part of the Study Framework** — the "ask your vault" piece. The other components
 > (speed-reading, spaced-repetition, quiz, and `claude-study-server` for generation) turn a single
 > note into study material. This one lets you **ask questions across your whole Obsidian vault** and
