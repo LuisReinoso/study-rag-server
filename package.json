@@ -10,7 +10,7 @@
     "start": "node dist/main.js",
     "dev": "tsx watch src/main.ts",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test src/rag/*.test.ts"
+    "test": "node --import tsx --test src/rag/*.test.ts src/llm/*.test.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

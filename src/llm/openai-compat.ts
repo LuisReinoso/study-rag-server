@@ -5,6 +5,7 @@ import type { ChatMessage, ChatOptions, LLMProvider } from "./provider.js";
 
 export interface OpenAICompatConfig {
   baseUrl: string;
+  embedBaseUrl?: string; // defaults to baseUrl (llama.cpp serves chat OR embeddings, not both)
   model: string;
   embedModel: string;
   apiKey?: string;
@@ -15,12 +16,13 @@ export function createOpenAICompatProvider(cfg: OpenAICompatConfig): LLMProvider
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (cfg.apiKey) headers.Authorization = `Bearer ${cfg.apiKey}`;
   const timeoutMs = cfg.timeoutMs ?? 60000;
+  const embedBase = cfg.embedBaseUrl ?? cfg.baseUrl;
 
-  async function post(path: string, body: unknown): Promise<any> {
+  async function post(base: string, path: string, body: unknown): Promise<any> {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const res = await fetch(`${cfg.baseUrl}${path}`, {
+      const res = await fetch(`${base}${path}`, {
         method: "POST",
         headers,
         body: JSON.stringify(body),
@@ -34,10 +36,10 @@ export function createOpenAICompatProvider(cfg: OpenAICompatConfig): LLMProvider
   }
 
   return {
-    name: `openai-compat(${cfg.baseUrl}, ${cfg.model})`,
+    name: `openai-compat(chat=${cfg.baseUrl}/${cfg.model}, embed=${embedBase}/${cfg.embedModel})`,
 
     async chat(messages: ChatMessage[], opts: ChatOptions = {}) {
-      const data = await post("/v1/chat/completions", {
+      const data = await post(cfg.baseUrl, "/v1/chat/completions", {
         model: cfg.model,
         messages,
         temperature: opts.temperature ?? 0.2,
@@ -48,7 +50,7 @@ export function createOpenAICompatProvider(cfg: OpenAICompatConfig): LLMProvider
     },
 
     async embed(texts: string[]) {
-      const data = await post("/v1/embeddings", { model: cfg.embedModel, input: texts });
+      const data = await post(embedBase, "/v1/embeddings", { model: cfg.embedModel, input: texts });
       // Re-sort by index: the input order is not guaranteed in the response.
       return (data.data as Array<{ index: number; embedding: number[] }>)
         .slice()

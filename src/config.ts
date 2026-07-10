@@ -3,6 +3,9 @@ export interface AppConfig {
   llm: {
     provider: string;
     baseUrl: string;
+    // Endpoint for embeddings. A single llama.cpp server does chat OR embeddings, not both,
+    // so chat and embeddings can point to different servers. Defaults to baseUrl.
+    embedBaseUrl: string;
     model: string;
     embedModel: string;
     apiKey?: string;
@@ -25,6 +28,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     llm: {
       provider: env.LLM_PROVIDER || "openai-compat",
       baseUrl: env.LLM_BASE_URL || "http://127.0.0.1:8080",
+      embedBaseUrl: env.LLM_EMBED_BASE_URL || env.LLM_BASE_URL || "http://127.0.0.1:8080",
       model: env.LLM_MODEL || "local",
       embedModel: env.LLM_EMBED_MODEL || "nomic-embed-text",
       apiKey: env.LLM_API_KEY || undefined,

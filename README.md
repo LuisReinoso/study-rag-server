@@ -52,12 +52,15 @@ curl -X POST localhost:8787/api/ask -H 'content-type: application/json' \
 ## Running with different models (no code changes)
 
 ```
-# llama.cpp
-LLM_BASE_URL=http://127.0.0.1:8080   LLM_MODEL=local
-
-# Ollama
+# Ollama (one server does chat and embeddings)
 LLM_BASE_URL=http://127.0.0.1:11434  LLM_MODEL=llama3.1  LLM_EMBED_MODEL=nomic-embed-text
+
+# llama.cpp (a server does chat OR embeddings, not both) -> split the endpoints:
+LLM_BASE_URL=http://127.0.0.1:8080         # chat
+LLM_EMBED_BASE_URL=http://127.0.0.1:11434  # embeddings (another llama.cpp --embedding, or Ollama)
 ```
+
+`LLM_EMBED_BASE_URL` defaults to `LLM_BASE_URL` when unset.
 
 ## Structure
 
